@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { FiEdit, FiTrash2, FiPlus, FiAlertCircle, FiLoader } from 'react-icons/fi';
 import Header from '../../components/layout/Header';
@@ -29,6 +28,7 @@ const UserManagement: React.FC = () => {
       
       try {
         const response = await api.mockRequest('get', '/api/admin/users');
+        console.log("Fetched users:", response.data);
         setUsers(response.data);
       } catch (err: any) {
         setError(err.message || 'Failed to fetch users');

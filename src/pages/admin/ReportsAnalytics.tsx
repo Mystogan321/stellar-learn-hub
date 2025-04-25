@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { FiAlertCircle, FiLoader, FiFilter, FiDownload } from 'react-icons/fi';
 import Header from '../../components/layout/Header';
@@ -57,12 +56,14 @@ const ReportsAnalytics: React.FC = () => {
         // Fetch course stats
         setIsLoadingCourses(true);
         const courseResponse = await api.mockRequest('get', '/api/admin/reports/courses');
+        console.log("Course stats:", courseResponse.data);
         setCourseStats(courseResponse.data);
         setIsLoadingCourses(false);
         
         // Fetch assessment attempts
         setIsLoadingAttempts(true);
         const attemptResponse = await api.mockRequest('get', '/api/admin/reports/assessments');
+        console.log("Assessment attempts:", attemptResponse.data);
         setAssessmentAttempts(attemptResponse.data);
         setIsLoadingAttempts(false);
       } catch (err: any) {

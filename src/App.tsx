@@ -3,7 +3,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 
 // Pages
 import LoginPage from "./pages/LoginPage";
@@ -17,18 +18,14 @@ import AdminQuestions from "./pages/AdminQuestions";
 import UserManagement from "./pages/admin/UserManagement";
 import ReportsAnalytics from "./pages/admin/ReportsAnalytics";
 import NotFound from "./pages/NotFound";
-import Index from "./pages/Index";
 
 // Auth guard
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import { useAuthStore } from "./store/authStore";
-import { useEffect } from "react";
 
 const queryClient = new QueryClient();
 
 const App = () => {
-  const { user } = useAuthStore();
-  
   // Enable dark mode by default
   useEffect(() => {
     document.documentElement.classList.add('dark');
@@ -43,7 +40,9 @@ const App = () => {
           <Routes>
             {/* Public routes */}
             <Route path="/login" element={<LoginPage />} />
-            <Route path="/" element={<Index />} />
+            
+            {/* Root path redirects to login or dashboard based on auth status */}
+            <Route path="/" element={<RootRedirect />} />
             
             {/* Protected routes */}
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
@@ -93,6 +92,17 @@ const App = () => {
       </TooltipProvider>
     </QueryClientProvider>
   );
+};
+
+// Root route handler that redirects based on authentication status
+const RootRedirect = () => {
+  const { isAuthenticated } = useAuthStore();
+  
+  if (isAuthenticated()) {
+    return <Navigate to="/dashboard" replace />;
+  } else {
+    return <Navigate to="/login" replace />;
+  }
 };
 
 export default App;

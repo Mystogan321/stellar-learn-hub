@@ -1,17 +1,22 @@
 
-import axios from 'axios';
+import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
+
+// Extend the AxiosInstance interface to include our mockRequest method
+interface ExtendedAxiosInstance extends AxiosInstance {
+  mockRequest: (method: string, endpoint: string, data?: any, delay?: number) => Promise<any>;
+}
 
 // Create axios instance with base URL
-const api = axios.create({
+const axiosInstance = axios.create({
   baseURL: 'https://mock-api.example.com/api', // Replace with actual mock API URL
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
   },
-});
+}) as ExtendedAxiosInstance;
 
 // Request interceptor for adding auth token
-api.interceptors.request.use(
+axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -23,7 +28,7 @@ api.interceptors.request.use(
 );
 
 // Response interceptor for handling common errors
-api.interceptors.response.use(
+axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
     // Handle 401 Unauthorized errors (token expired, etc.)
@@ -38,7 +43,7 @@ api.interceptors.response.use(
 );
 
 // Mock API helper function to simulate API calls
-api.mockRequest = async (method, endpoint, data = null, delay = 500) => {
+axiosInstance.mockRequest = async (method: string, endpoint: string, data: any = null, delay: number = 500) => {
   // Simulate network delay
   await new Promise(resolve => setTimeout(resolve, delay));
   
@@ -46,6 +51,29 @@ api.mockRequest = async (method, endpoint, data = null, delay = 500) => {
   let response;
   
   switch (`${method.toLowerCase()} ${endpoint}`) {
+    case 'post /api/auth/login':
+      // Simulate login API
+      const { email, password } = data;
+      
+      if (email && (email.includes('demo') || password.includes('demo'))) {
+        const mockUserRole = email.includes('admin') ? 'admin' : 'learner';
+        response = {
+          data: {
+            token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Ik1vY2sgVXNlciIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTUxNjIzOTAyMn0',
+            user: {
+              id: 'user-' + Math.floor(Math.random() * 1000),
+              name: email.split('@')[0],
+              email: email,
+              role: mockUserRole
+            }
+          }
+        };
+      } else {
+        // Simulate failed login
+        throw { response: { status: 401, data: { message: 'Invalid credentials' } } };
+      }
+      break;
+      
     case 'get /api/admin/users':
       response = {
         data: [
@@ -84,4 +112,5 @@ api.mockRequest = async (method, endpoint, data = null, delay = 500) => {
   return response;
 };
 
+const api = axiosInstance;
 export default api;
