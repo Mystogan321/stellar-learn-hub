@@ -2,10 +2,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import api from '../services/api';
-import { initMockData } from '../mockData';
-
-// Initialize mock data (remove in production)
-initMockData();
 
 // Define user type
 export type Role = 'learner' | 'hr' | 'mentor' | 'lead' | 'admin';
@@ -41,21 +37,26 @@ export const useAuthStore = create<AuthState>()(
       isLoading: false,
       error: null,
 
-      // Login function
+      // Login function with JWT authentication
       login: async (email: string, password: string) => {
         set({ isLoading: true, error: null });
         try {
-          // In a real app, this would make an API call
-          // For demo, accept any email/password combo with "demo" in it
-          if (email.includes('demo') || password.includes('demo')) {
+          // Simulate API call to login endpoint
+          const response = await api.post('/api/auth/login', { email, password });
+          
+          // In a real app, this would come from the API
+          // For mock implementation, we'll simulate a successful response with JWT token
+          if (response.status === 200 || (email.includes('demo') || password.includes('demo'))) {
+            const mockUserRole: Role = email.includes('admin') ? 'admin' : 'learner';
+            
             const mockUser = {
-              id: 'user-1',
-              name: 'Demo User',
+              id: 'user-' + Math.floor(Math.random() * 1000),
+              name: email.split('@')[0],
               email: email,
-              role: 'admin' as Role
+              role: mockUserRole
             };
             
-            const mockToken = 'mock-jwt-token';
+            const mockToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Ik1vY2sgVXNlciIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTUxNjIzOTAyMn0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
             
             // Set data in store
             set({ 
@@ -64,11 +65,15 @@ export const useAuthStore = create<AuthState>()(
               isLoading: false 
             });
             
-            // Set in localStorage for persistence
-            localStorage.setItem('token', mockToken);
-            localStorage.setItem('user', JSON.stringify(mockUser));
+            // Configure API interceptor with new token
+            api.interceptors.request.use(
+              (config) => {
+                config.headers.Authorization = `Bearer ${mockToken}`;
+                return config;
+              },
+              (error) => Promise.reject(error)
+            );
           } else {
-            // Simulate API error for wrong credentials
             throw new Error('Invalid credentials');
           }
         } catch (error: any) {
@@ -81,6 +86,14 @@ export const useAuthStore = create<AuthState>()(
 
       // Logout function
       logout: () => {
+        // Clear token from API interceptors
+        api.interceptors.request.use(
+          (config) => {
+            delete config.headers.Authorization;
+            return config;
+          }
+        );
+        
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         set({ user: null, token: null });

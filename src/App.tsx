@@ -14,7 +14,10 @@ import AssessmentStartPage from "./pages/AssessmentStartPage";
 import AssessmentPage from "./pages/AssessmentPage";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminQuestions from "./pages/AdminQuestions";
+import UserManagement from "./pages/admin/UserManagement";
+import ReportsAnalytics from "./pages/admin/ReportsAnalytics";
 import NotFound from "./pages/NotFound";
+import Index from "./pages/Index";
 
 // Auth guard
 import ProtectedRoute from "./components/auth/ProtectedRoute";
@@ -40,9 +43,9 @@ const App = () => {
           <Routes>
             {/* Public routes */}
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/" element={<Index />} />
             
             {/* Protected routes */}
-            <Route path="/" element={<ProtectedRoute><Navigate to="/dashboard" replace /></ProtectedRoute>} />
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/courses" element={<ProtectedRoute><CoursesPage /></ProtectedRoute>} />
             <Route path="/courses/:courseId" element={<ProtectedRoute><CourseDetailPage /></ProtectedRoute>} />
@@ -63,6 +66,22 @@ const App = () => {
               element={
                 <ProtectedRoute requiredRoles={['admin', 'hr', 'mentor', 'lead']}>
                   <AdminQuestions />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/users" 
+              element={
+                <ProtectedRoute requiredRoles={['admin', 'hr', 'mentor', 'lead']}>
+                  <UserManagement />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/reports" 
+              element={
+                <ProtectedRoute requiredRoles={['admin', 'hr', 'mentor', 'lead']}>
+                  <ReportsAnalytics />
                 </ProtectedRoute>
               } 
             />

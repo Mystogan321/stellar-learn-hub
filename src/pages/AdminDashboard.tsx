@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FiUsers, FiBookOpen, FiFileText, FiBarChart2, FiAward, FiActivity } from 'react-icons/fi';
+import { FiUsers, FiBookOpen, FiFileText, FiBarChart2, FiAward, FiActivity, FiCheckCircle } from 'react-icons/fi';
 import Header from '../components/layout/Header';
 import { useAuthStore } from '../store/authStore';
 
@@ -100,6 +100,13 @@ const AdminDashboard: React.FC = () => {
               
               <div className="space-y-3">
                 <Link 
+                  to="/admin/users"
+                  className="flex items-center p-3 bg-white/5 hover:bg-white/10 rounded-lg transition-colors"
+                >
+                  <FiUsers className="h-5 w-5 text-primary mr-3" />
+                  <span className="text-white">Manage Users</span>
+                </Link>
+                <Link 
                   to="/admin/courses"
                   className="flex items-center p-3 bg-white/5 hover:bg-white/10 rounded-lg transition-colors"
                 >
@@ -114,25 +121,18 @@ const AdminDashboard: React.FC = () => {
                   <span className="text-white">Manage Assessments</span>
                 </Link>
                 <Link 
-                  to="/admin/users"
+                  to="/admin/reports"
                   className="flex items-center p-3 bg-white/5 hover:bg-white/10 rounded-lg transition-colors"
                 >
-                  <FiUsers className="h-5 w-5 text-primary mr-3" />
-                  <span className="text-white">Manage Users</span>
-                </Link>
-                <Link 
-                  to="/admin/analytics"
-                  className="flex items-center p-3 bg-white/5 hover:bg-white/10 rounded-lg transition-colors"
-                >
-                  <FiActivity className="h-5 w-5 text-primary mr-3" />
-                  <span className="text-white">View Analytics</span>
+                  <FiBarChart2 className="h-5 w-5 text-primary mr-3" />
+                  <span className="text-white">Reports & Analytics</span>
                 </Link>
                 <Link 
                   to="/admin/questions"
                   className="flex items-center p-3 bg-white/5 hover:bg-white/10 rounded-lg transition-colors"
                 >
                   <FiAward className="h-5 w-5 text-primary mr-3" />
-                  <span className="text-white">Review AI Questions</span>
+                  <span className="text-white">AI Question Generator</span>
                 </Link>
               </div>
             </div>
