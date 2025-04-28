@@ -1,9 +1,14 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
 import { useEffect } from "react";
 
 // Pages
@@ -18,6 +23,8 @@ import AdminQuestions from "./pages/AdminQuestions";
 import UserManagement from "./pages/admin/UserManagement";
 import ReportsAnalytics from "./pages/admin/ReportsAnalytics";
 import NotFound from "./pages/NotFound";
+import AdminCourseManagement from "./pages/admin/AdminCourseManagement";
+import NewCourse from "./pages/NewCourse";
 
 // Auth guard
 import ProtectedRoute from "./components/auth/ProtectedRoute";
@@ -28,7 +35,7 @@ const queryClient = new QueryClient();
 const App = () => {
   // Enable dark mode by default
   useEffect(() => {
-    document.documentElement.classList.add('dark');
+    document.documentElement.classList.add("dark");
   }, []);
 
   return (
@@ -40,51 +47,115 @@ const App = () => {
           <Routes>
             {/* Public routes */}
             <Route path="/login" element={<LoginPage />} />
-            
+
             {/* Root path redirects to login or dashboard based on auth status */}
             <Route path="/" element={<RootRedirect />} />
-            
+
             {/* Protected routes */}
-            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-            <Route path="/courses" element={<ProtectedRoute><CoursesPage /></ProtectedRoute>} />
-            <Route path="/courses/:courseId" element={<ProtectedRoute><CourseDetailPage /></ProtectedRoute>} />
-            <Route path="/assessments/:assessmentId" element={<ProtectedRoute><AssessmentStartPage /></ProtectedRoute>} />
-            <Route path="/assessments/:assessmentId/take" element={<ProtectedRoute><AssessmentPage /></ProtectedRoute>} />
-            
-            {/* Admin routes */}
-            <Route 
-              path="/admin" 
+            <Route
+              path="/dashboard"
               element={
-                <ProtectedRoute requiredRoles={['admin', 'hr', 'mentor', 'lead']}>
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/courses"
+              element={
+                <ProtectedRoute>
+                  <CoursesPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/courses/:courseId"
+              element={
+                <ProtectedRoute>
+                  <CourseDetailPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/assessments/:assessmentId"
+              element={
+                <ProtectedRoute>
+                  <AssessmentStartPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/assessments/:assessmentId/take"
+              element={
+                <ProtectedRoute>
+                  <AssessmentPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Admin routes */}
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute
+                  requiredRoles={["admin", "hr", "mentor", "lead"]}
+                >
                   <AdminDashboard />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/admin/questions" 
+
+            <Route
+              path="/admin/courses/new"
               element={
-                <ProtectedRoute requiredRoles={['admin', 'hr', 'mentor', 'lead']}>
+                <ProtectedRoute
+                  requiredRoles={["admin", "hr", "mentor", "lead"]}
+                >
+                  <NewCourse />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/questions"
+              element={
+                <ProtectedRoute
+                  requiredRoles={["admin", "hr", "mentor", "lead"]}
+                >
                   <AdminQuestions />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/admin/users" 
+            <Route
+              path="/admin/users"
               element={
-                <ProtectedRoute requiredRoles={['admin', 'hr', 'mentor', 'lead']}>
+                <ProtectedRoute
+                  requiredRoles={["admin", "hr", "mentor", "lead"]}
+                >
                   <UserManagement />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/admin/reports" 
+            <Route
+              path="/admin/reports"
               element={
-                <ProtectedRoute requiredRoles={['admin', 'hr', 'mentor', 'lead']}>
+                <ProtectedRoute
+                  requiredRoles={["admin", "hr", "mentor", "lead"]}
+                >
                   <ReportsAnalytics />
                 </ProtectedRoute>
-              } 
+              }
             />
-            
+            <Route
+              path="/admin/courses"
+              element={
+                <ProtectedRoute
+                  requiredRoles={["admin", "hr", "mentor", "lead"]}
+                >
+                  <AdminCourseManagement />
+                </ProtectedRoute>
+              }
+            />
+
             {/* Catch-all */}
             <Route path="*" element={<NotFound />} />
           </Routes>
@@ -97,7 +168,7 @@ const App = () => {
 // Root route handler that redirects based on authentication status
 const RootRedirect = () => {
   const { isAuthenticated } = useAuthStore();
-  
+
   if (isAuthenticated()) {
     return <Navigate to="/dashboard" replace />;
   } else {
